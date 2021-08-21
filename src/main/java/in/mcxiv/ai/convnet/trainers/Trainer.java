@@ -1,6 +1,6 @@
 package in.mcxiv.ai.convnet.trainers;
 
-import in.mcxiv.ai.convnet.DoubleArray;
+import in.mcxiv.ai.convnet.DoubleBuffer;
 import in.mcxiv.ai.convnet.Net;
 import in.mcxiv.ai.convnet.Vol;
 import in.mcxiv.ai.convnet.net.VP;
@@ -26,8 +26,8 @@ public class Trainer {
     public double beta2;
 
     public int k;
-    public ArrayList<DoubleArray> gsum;
-    public ArrayList<DoubleArray> xsum;
+    public ArrayList<DoubleBuffer> gsum;
+    public ArrayList<DoubleBuffer> xsum;
 
     public boolean regression;
 
@@ -78,7 +78,7 @@ public class Trainer {
         end = System.nanoTime();
         var bwd_time = end - start;
 
-        if (this.regression && !(y instanceof DoubleArray))
+        if (this.regression && !(y instanceof DoubleBuffer))
             System.err.println("Warning: a regression net requires an array as training output vector.");
 
         this.k++;
@@ -94,12 +94,12 @@ public class Trainer {
                 // adagrad needs gsum
                 // adam and adadelta needs gsum and xsum
                 for (var i = 0; i < pglist.size(); i++) {
-                    DoubleArray params = pglist.get(i).getFC("params");
-                    this.gsum.add(zeros(params.length));
+                    DoubleBuffer params = pglist.get(i).getFC("params");
+                    this.gsum.add(zeros(params.size));
                     if (this.method.equals("adam") || this.method.equals("adadelta")) {
-                        this.xsum.add(zeros(params.length));
+                        this.xsum.add(zeros(params.size));
                     } else {
-                        this.xsum.add(new DoubleArray()); // conserve memory
+                        this.xsum.add(new DoubleBuffer()); // conserve memory
                     }
                 }
             }
@@ -107,8 +107,8 @@ public class Trainer {
             // perform an update for all sets of weights
             for (var i = 0; i < pglist.size(); i++) {
                 var pg = pglist.get(i); // param, gradient, other options in future (custom learning rate etc)
-                DoubleArray p = pg.getFC("params");
-                DoubleArray g = pg.getFC("grads");
+                DoubleBuffer p = pg.getFC("params");
+                DoubleBuffer g = pg.getFC("grads");
 
                 // learning rate for some parameters.
                 var l2_decay_mul = pg.notNull("l2_decay_mul") ? pg.getD("l2_decay_mul") : 1.0;
@@ -116,7 +116,7 @@ public class Trainer {
                 var l2_decay = this.l2_decay * l2_decay_mul;
                 var l1_decay = this.l1_decay * l1_decay_mul;
 
-                var plen = p.length;
+                var plen = p.size;
                 for (var j = 0; j < plen; j++) {
                     l2_decay_loss += l2_decay * p.get(j) * p.get(j) / 2; // accumulate weight decay loss
                     l1_decay_loss += l1_decay * Math.abs(p.get(j));
@@ -125,8 +125,8 @@ public class Trainer {
 
                     var gij = (l2grad + l1grad + g.get(j)) / this.batch_size; // raw batch gradient
 
-                    DoubleArray gsumi = null;
-                    DoubleArray xsumi = null;
+                    DoubleBuffer gsumi = null;
+                    DoubleBuffer xsumi = null;
                     if (isNotVanillaSGD) {
                         gsumi = this.gsum.get(i);
                         xsumi = this.xsum.get(i);

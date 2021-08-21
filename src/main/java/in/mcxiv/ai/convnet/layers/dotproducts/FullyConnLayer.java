@@ -59,7 +59,7 @@ public class FullyConnLayer extends Layer {
     @Override
     public void backward() {
         var V = this.in_act;
-        V.dw = zeros(V.w.length); // zero out the gradient in input Vol
+        V.dw = zeros(V.w.size); // zero out the gradient in input Vol
 
         // compute gradient wrt weights and data
         for (var i = 0; i < this.out_depth; i++) {

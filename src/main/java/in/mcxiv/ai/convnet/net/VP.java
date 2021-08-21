@@ -95,6 +95,7 @@ public class VP {
     public double getD(String key) {
         Object obj = get(key);
         if(obj instanceof Double d) return d.intValue();
+        if(obj instanceof Integer i) return i;
         if(obj instanceof String s) return Double.parseDouble(s);
         throw throwUp();
     }

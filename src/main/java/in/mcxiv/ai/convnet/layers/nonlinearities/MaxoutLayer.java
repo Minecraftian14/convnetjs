@@ -1,6 +1,6 @@
 package in.mcxiv.ai.convnet.layers.nonlinearities;
 
-import in.mcxiv.ai.convnet.DoubleArray;
+import in.mcxiv.ai.convnet.DoubleBuffer;
 import in.mcxiv.ai.convnet.Vol;
 import in.mcxiv.ai.convnet.net.Layer;
 import in.mcxiv.ai.convnet.net.VP;
@@ -11,7 +11,7 @@ import static in.mcxiv.ai.convnet.Util.zeros;
 
 public class MaxoutLayer extends Layer {
 
-    public DoubleArray switches;
+    public DoubleBuffer switches;
     public int group_size;
 
     public MaxoutLayer(VP opt) {
@@ -88,7 +88,7 @@ public class MaxoutLayer extends Layer {
         var V = this.in_act; // we need to set dw of this
         var V2 = this.out_act;
         var N = this.out_depth;
-        V.dw = zeros(V.w.length); // zero out gradient wrt data
+        V.dw = zeros(V.w.size); // zero out gradient wrt data
 
         // pass the gradient through the appropriate switch
         if(this.out_sx == 1 && this.out_sy ==1) {

@@ -1,13 +1,8 @@
 package in.mcxiv.ai.convnet;
 
-import in.mcxiv.ai.convnet.net.Layer;
 import in.mcxiv.ai.convnet.net.VP;
 import in.mcxiv.ai.convnet.trainers.Trainer;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class TooBasicOfATest_TheFromReadme {
 
@@ -131,7 +126,7 @@ class TooBasicOfATest_TheFromReadme {
         // used num_neurons,1 for the regression to only regress one.
         var trainer = new Trainer(net,
         "learning_rate",0.01, "momentum",0.0, "batch_size",1, "l2_decay",0.001);
-        DoubleArray y = new DoubleArray();
+        DoubleBuffer y = new DoubleBuffer();
         y.add(0.7);
         trainer.train(x, y);
 

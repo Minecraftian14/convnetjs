@@ -15,7 +15,6 @@ import in.mcxiv.ai.convnet.layers.normalization.LocalResponseNormalizationLayer;
 import in.mcxiv.ai.convnet.layers.pool.PoolLayer;
 import in.mcxiv.ai.convnet.net.Layer;
 import in.mcxiv.ai.convnet.net.VP;
-import org.lwjgl.openal.AL;
 
 import java.util.ArrayList;
 
@@ -46,12 +45,12 @@ public class Net {
             switch (type) {
                 case "softmax":
                 case "svm":
-                    // add an fc layer here, there is no reason the user should
+                    // set an fc layer here, there is no reason the user should
                     // have to worry about this and we almost always want to
                     new_defs.add(new VP("type", "fc", "num_neurons", def.get("num_classes")));
                     break;
                 case "regression":
-                    // add an fc layer here, there is no reason the user should
+                    // set an fc layer here, there is no reason the user should
                     // have to worry about this and we almost always want to
                     // {type:'fc', num_neurons: def.num_neurons}
                     new_defs.add(new VP("type", "fc", "num_neurons", def.get("num_neurons")));
@@ -191,7 +190,7 @@ public class Net {
         var p = S.out_act.w;
         var maxv = p.get(0);
         var maxi = 0;
-        for(var i=1;i<p.length;i++) {
+        for(var i = 1; i<p.size; i++) {
             if(p.get(i) > maxv) { maxv = p.get(i); maxi = i;}
         }
         return maxi; // return index of the class with highest class probability

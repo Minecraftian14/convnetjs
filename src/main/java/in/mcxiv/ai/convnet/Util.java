@@ -41,15 +41,15 @@ public class Util {
     }
 
     // Array utilities
-    public static DoubleArray zeros(int n) {
-        DoubleArray array = new DoubleArray(n);
+    public static DoubleBuffer zeros(int n) {
+        DoubleBuffer array = new DoubleBuffer(n);
         for (int i = 0; i < n; i++) {
-            array.add(n,0);
+            array.set(i,0);
         }
         return array;
     }
 
-    public static DoubleArray zeros(double n) {
+    public static DoubleBuffer zeros(double n) {
         if (Double.isNaN(n)) return zeros(0);
         return zeros((int) n);
     }
@@ -68,13 +68,13 @@ public class Util {
         //    }
     }
 
-    public static boolean arrContains(DoubleArray arr, double elt) {
+    public static boolean arrContains(DoubleBuffer arr, double elt) {
         return arr.contains(elt);
     }
 
-    public static DoubleArray arrUnique(DoubleArray arr) {
-        var b = new DoubleArray();
-        for (int i = 0, n = arr.length; i < n; i++) {
+    public static DoubleBuffer arrUnique(DoubleBuffer arr) {
+        var b = new DoubleBuffer();
+        for (int i = 0, n = arr.size; i < n; i++) {
             if (!arrContains(b, arr.get(i))) {
                 b.add(arr.get(i));
             }
@@ -83,14 +83,14 @@ public class Util {
     }
 
     // return max and min of a given non-empty array.
-    public static MaxMinReport maxmin(DoubleArray w) {
+    public static MaxMinReport maxmin(DoubleBuffer w) {
         // ... ;s
-        if (w.length == 0) return null;
+        if (w.size == 0) return null;
         var maxv = w.get(0);
         var minv = w.get(0);
         var maxi = 0;
         var mini = 0;
-        var n = w.length;
+        var n = w.size;
         for (var i = 1; i < n; i++) {
             if (w.get(i) > maxv) {
                 maxv = w.get(i);
@@ -102,6 +102,31 @@ public class Util {
             }
         }
         return new MaxMinReport(maxi, maxv, mini, minv);
+    }
+
+    public static void printAccuracy(Vol[] xi, int[] yi, Net net) {
+
+    }
+    public static void printARandomExample(Vol[] xi, int[] yi, Net net) {
+        int randomIndex = (int) (xi.length * random());
+        var h = net.forward(xi[randomIndex]);
+        var y = yi[randomIndex];
+        System.out.println("<<<<<<<<<Predictions >>>>>>>>>");
+        System.out.println(h.meta());
+        double max = -Double.MAX_VALUE;
+        int maxi = -1;
+        for (int i = 0; i < h.depth; i++) {
+            double v = h.get(0, 0, i);
+            if (v >= max) {
+                max = v;
+                maxi = i;
+            }
+            System.out.printf(" %4.2f ", v);
+        }
+        System.out.println("\n>>>" + maxi);
+        System.out.println("<<<<<<<<<Expectations>>>>>>>>>");
+        System.out.println(">>>" + y);
+        System.out.println("<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>");
     }
 
     public static class MaxMinReport {
@@ -121,10 +146,10 @@ public class Util {
     }
 
     // create random permutation of numbers, in range [0...n-1]
-    public static DoubleArray randperm(int n) {
+    public static DoubleBuffer randperm(int n) {
         int i = n, j = 0;
         double temp;
-        var array = new DoubleArray();
+        var array = new DoubleBuffer();
         for (var q = 0; q < n; q++) array.set(q, q);
         while (i-- > 0) {
             j = (int) Math.floor(Math.random() * (i + 1));
@@ -135,10 +160,10 @@ public class Util {
 
     // sample from list lst according to probabilities in list probs
     // the two lists are of same size, and probs adds up to 1
-    public static double weightedSample(DoubleArray lst, DoubleArray probs) {
+    public static double weightedSample(DoubleBuffer lst, DoubleBuffer probs) {
         var p = randf(0, 1.0);
         var cumprob = 0.0;
-        for (int k = 0, n = lst.length; k < n; k++) {
+        for (int k = 0, n = lst.size; k < n; k++) {
             cumprob += probs.get(k);
             if (p < cumprob) return lst.get(k);
         }

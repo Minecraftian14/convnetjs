@@ -1,6 +1,6 @@
 package in.mcxiv.ai.convnet.layers.dropout;
 
-import in.mcxiv.ai.convnet.DoubleArray;
+import in.mcxiv.ai.convnet.DoubleBuffer;
 import in.mcxiv.ai.convnet.Vol;
 import in.mcxiv.ai.convnet.net.Layer;
 import in.mcxiv.ai.convnet.net.VP;
@@ -11,7 +11,7 @@ import static in.mcxiv.ai.convnet.Util.zeros;
 
 public class DropoutLayer extends Layer {
 
-    public DoubleArray dropped;
+    public DoubleBuffer dropped;
     public double drop_prob;
 
     public DropoutLayer(VP opt) {
@@ -31,7 +31,7 @@ public class DropoutLayer extends Layer {
     public Vol forward(Vol V, boolean is_training) {
         this.in_act = V;
         var V2 = V.clone();
-        var N = V.w.length;
+        var N = V.w.size;
         if (is_training) {
             // do dropout
             for (var i = 0; i < N; i++) {
@@ -57,7 +57,7 @@ public class DropoutLayer extends Layer {
     public void backward() {
         var V = this.in_act; // we need to set dw of this
         var chain_grad = this.out_act;
-        var N = V.w.length;
+        var N = V.w.size;
         V.dw = zeros(N); // zero out gradient wrt data
         for(var i=0;i<N;i++) {
             if(this.dropped.get(i)==0) {

@@ -33,7 +33,7 @@ public class SVMLayer extends Layer {
     protected double backward(int y) {
         // compute and accumulate gradient wrt weights and bias of this layer
         var x = this.in_act;
-        x.dw = zeros(x.w.length); // zero out the gradient of input Vol
+        x.dw = zeros(x.w.size); // zero out the gradient of input Vol
 
         // we're using structured loss here, which means that the score
         // of the ground truth should be higher than the score of any other

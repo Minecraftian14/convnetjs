@@ -1,6 +1,5 @@
 package in.mcxiv.ai.convnet;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class VolUtil {
@@ -14,7 +13,7 @@ public class VolUtil {
         var H = img.getHeight();
         int model = (convert_grayscale ? 1 : 4);
 
-        DoubleArray data = new DoubleArray();
+        DoubleBuffer data = new DoubleBuffer();
         if (convert_grayscale) {
             for (int i = 0; i < W; i++) {
                 for (int j = 0; j < H; j++) {
@@ -37,7 +36,7 @@ public class VolUtil {
             }
         }
 
-        for (int i = 0, s = data.length; i < s; i++)
+        for (int i = 0, s = data.size; i < s; i++)
             data.set(i, data.get(i) / 255 - 0.5);
 
         Vol x = new Vol(W, H, model, 0.0); //input volume (image)

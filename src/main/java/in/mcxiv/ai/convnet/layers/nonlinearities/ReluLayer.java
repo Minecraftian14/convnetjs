@@ -25,7 +25,7 @@ public class ReluLayer extends Layer {
     public Vol forward(Vol V, boolean is_training) {
         this.in_act = V;
         var V2 = V.clone();
-        var N = V.w.length;
+        var N = V.w.size;
         var V2w = V2.w;
         for (var i = 0; i < N; i++) {
             if (V2w.get(i) < 0) V2w.set(i, 0); // threshold at 0
@@ -38,7 +38,7 @@ public class ReluLayer extends Layer {
     public void backward() {
         var V = this.in_act; // we need to set dw of this
         var V2 = this.out_act;
-        var N = V.w.length;
+        var N = V.w.size;
         V.dw = zeros(N); // zero out gradient wrt data
         for(var i=0;i<N;i++) {
             if(V2.w.get(i) <= 0) V.dw.set(i,0); // threshold

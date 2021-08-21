@@ -74,7 +74,7 @@ public class LocalResponseNormalizationLayer extends Layer {
     public void backward() {
         // evaluate gradient wrt data
         var V = this.in_act; // we need to set dw of this
-        V.dw = zeros(V.w.length); // zero out gradient wrt data
+        V.dw = zeros(V.w.size); // zero out gradient wrt data
         var A = this.out_act; // computed in forward pass
 
         var n2 = Math.floor(this.n / 2d);

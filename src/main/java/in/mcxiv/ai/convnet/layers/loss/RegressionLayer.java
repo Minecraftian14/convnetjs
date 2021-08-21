@@ -1,6 +1,6 @@
 package in.mcxiv.ai.convnet.layers.loss;
 
-import in.mcxiv.ai.convnet.DoubleArray;
+import in.mcxiv.ai.convnet.DoubleBuffer;
 import in.mcxiv.ai.convnet.Vol;
 import in.mcxiv.ai.convnet.net.Layer;
 import in.mcxiv.ai.convnet.net.VP;
@@ -34,7 +34,7 @@ public class RegressionLayer extends Layer {
 
         // compute and accumulate gradient wrt weights and bias of this layer
         var x = this.in_act;
-        x.dw = zeros(x.w.length); // zero out the gradient of input Vol
+        x.dw = zeros(x.w.size); // zero out the gradient of input Vol
         var loss = 0.0;
 
         if (inp instanceof Integer y) {
@@ -42,13 +42,13 @@ public class RegressionLayer extends Layer {
             var dy = x.w.get(0) - y;
             x.dw.set(0, dy);
             loss += 0.5*dy*dy;
-        } else if (inp instanceof DoubleArray y) {
+        } else if (inp instanceof DoubleBuffer y) {
             for(var i=0;i<this.out_depth;i++) {
                 var dy = x.w.get(i) - y.get(i);
                 x.dw.set(i, dy);
                 loss += 0.5*dy*dy;
             }
-        } else if (inp instanceof DoubleArray[] y) {
+        } else if (inp instanceof DoubleBuffer[] y) {
             throw new IllegalStateException();
 //            // assume it is a struct with entries .dim and .val
 //            // and we pass gradient only along dimension dim to be equal to val

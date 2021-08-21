@@ -1,6 +1,6 @@
 package in.mcxiv.ai.convnet.layers.pool;
 
-import in.mcxiv.ai.convnet.DoubleArray;
+import in.mcxiv.ai.convnet.DoubleBuffer;
 import in.mcxiv.ai.convnet.Vol;
 import in.mcxiv.ai.convnet.net.Layer;
 import in.mcxiv.ai.convnet.net.VP;
@@ -11,8 +11,8 @@ import static in.mcxiv.ai.convnet.Util.zeros;
 
 public class PoolLayer extends Layer {
 
-    private final DoubleArray switchx;
-    private final DoubleArray switchy;
+    private final DoubleBuffer switchx;
+    private final DoubleBuffer switchy;
 
     public PoolLayer(VP opt) {
         super(opt);
@@ -27,7 +27,7 @@ public class PoolLayer extends Layer {
         // optional
         this.sy = opt.notNull("sy") ? opt.getInt("sy") : this.sx;
         this.stride = opt.notNull("stride") ? opt.getInt("stride") : 2;
-        this.pad = opt.notNull("pad") ? opt.getInt("pad ") : 0; // amount of 0 padding to add around borders of input volume
+        this.pad = opt.notNull("pad") ? opt.getInt("pad ") : 0; // amount of 0 padding to set around borders of input volume
 
         // computed
         this.out_depth = this.in_depth;
@@ -89,7 +89,7 @@ public class PoolLayer extends Layer {
         // pooling layers have no parameters, so simply compute
         // gradient wrt data here
         var V = this.in_act;
-        V.dw = zeros(V.w.length); // zero out gradient wrt data
+        V.dw = zeros(V.w.size); // zero out gradient wrt data
         var A = this.out_act; // computed in forward pass
 
         var n = 0;

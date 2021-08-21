@@ -1,6 +1,6 @@
 package in.mcxiv.ai.convnet.layers.loss;
 
-import in.mcxiv.ai.convnet.DoubleArray;
+import in.mcxiv.ai.convnet.DoubleBuffer;
 import in.mcxiv.ai.convnet.Vol;
 import in.mcxiv.ai.convnet.net.Layer;
 import in.mcxiv.ai.convnet.net.VP;
@@ -11,7 +11,7 @@ import static in.mcxiv.ai.convnet.Util.zeros;
 
 public class SoftmaxLayer extends Layer {
 
-    private DoubleArray es;
+    private DoubleBuffer es;
 
     public SoftmaxLayer(VP opt) {
         super(opt);
@@ -62,7 +62,7 @@ public class SoftmaxLayer extends Layer {
     public double backward(int y) {
         // compute and accumulate gradient wrt weights and bias of this layer
         var x = this.in_act;
-        x.dw = zeros(x.w.length); // zero out the gradient of input Vol
+        x.dw = zeros(x.w.size); // zero out the gradient of input Vol
 
         for(var i=0;i<this.out_depth;i++) {
             var indicator = i == y ? 1.0 : 0.0;

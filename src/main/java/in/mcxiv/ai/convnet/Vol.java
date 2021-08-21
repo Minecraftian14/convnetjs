@@ -18,8 +18,8 @@ public class Vol {
     public int sy;
     public int depth;
 
-    public DoubleArray w;
-    public DoubleArray dw;
+    public DoubleBuffer w;
+    public DoubleBuffer dw;
 
     /**
      * > this is how you check if a variable is an array. Oh, Javascript :)
@@ -50,16 +50,16 @@ public class Vol {
         this(sx, sy, depth, null);
     }
 
-    public Vol(double...sx) {
-        this(new DoubleArray(sx));
+    public Vol(double... sx) {
+        this(new DoubleBuffer(sx));
     }
 
-    public Vol(DoubleArray sx) {
+    public Vol(DoubleBuffer sx) {
 
         // we were given a list in sx, assume 1D volume and fill it up
         this.sx = 1;
         this.sy = 1;
-        this.depth = sx.length;
+        this.depth = sx.size;
 
         this.w = zeros(this.depth);
         this.dw = zeros(this.depth);
@@ -111,13 +111,13 @@ public class Vol {
 
     public Vol clone() {
         var V = new Vol(this.sx, this.sy, this.depth, 0.0);
-        var n = this.w.length;
+        var n = this.w.size;
         for (var i = 0; i < n; i++) V.w.set(i, this.w.get(i));
         return V;
     }
 
     public void addFrom(Vol V) {
-        for (var k = 0; k < this.w.length; k++) {
+        for (var k = 0; k < this.w.size; k++) {
             double v = this.w.get(k);
             v += V.w.get(k);
             this.w.set(k, v);
@@ -125,7 +125,7 @@ public class Vol {
     }
 
     public void addFromScaled(Vol V, double a) {
-        for (var k = 0; k < this.w.length; k++) {
+        for (var k = 0; k < this.w.size; k++) {
             double v = this.w.get(k);
             v += V.w.get(k) * a;
             this.w.set(k, v);
@@ -133,9 +133,13 @@ public class Vol {
     }
 
     public void setConst(double a) {
-        for (var k = 0; k < this.w.length; k++) {
+        for (var k = 0; k < this.w.size; k++) {
             this.w.set(k, a);
         }
+    }
+
+    public String meta() {
+        return String.format("Vol {sx = %d, sy = %d, depth = %d}", sx, sy, depth);
     }
 
     // toJSON: function() {

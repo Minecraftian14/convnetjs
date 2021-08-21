@@ -24,7 +24,7 @@ public class ConvLayer extends Layer {
         // optional
         this.sy = opt.notNull("sy") ? opt.getInt("sy") : this.sx;
         this.stride = opt.notNull("stride") ? opt.getInt("stride") : 1; // stride at which we apply filters to input volume
-        this.pad = opt.notNull("pad") ? opt.getInt("pad") : 0; // amount of 0 padding to add around borders of input volume
+        this.pad = opt.notNull("pad") ? opt.getInt("pad") : 0; // amount of 0 padding to set around borders of input volume
         this.l1_decay_mul = opt.notNull("l1_decay_mul") ? opt.getD("l1_decay_mul") : 0.0;
         this.l2_decay_mul = opt.notNull("l2_decay_mul") ? opt.getD("l2_decay_mul") : 1.0;
 
@@ -90,7 +90,7 @@ public class ConvLayer extends Layer {
     public void backward() {
 
         var V = this.in_act;
-        V.dw = zeros(V.w.length); // zero out gradient wrt bottom data, we're about to fill it
+        V.dw = zeros(V.w.size); // zero out gradient wrt bottom data, we're about to fill it
 
         var V_sx = V.sx;
         var V_sy = V.sy;

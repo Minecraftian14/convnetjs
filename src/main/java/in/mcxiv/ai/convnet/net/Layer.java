@@ -1,6 +1,6 @@
 package in.mcxiv.ai.convnet.net;
 
-import in.mcxiv.ai.convnet.DoubleArray;
+import in.mcxiv.ai.convnet.DoubleBuffer;
 import in.mcxiv.ai.convnet.Vol;
 
 import java.util.ArrayList;
@@ -44,11 +44,11 @@ public abstract class Layer {
     public double backward(Object y) {
         if (y instanceof Integer i) {
             return backward((int)i);
-        } else if (y instanceof DoubleArray da) {
-            if (da.length == 1)
+        } else if (y instanceof DoubleBuffer da) {
+            if (da.size == 1)
                 return backward((int) da.get(0)); // TODO: will round off be better?
             return backward(da);
-        } else if (y instanceof DoubleArray[] das) {
+        } else if (y instanceof DoubleBuffer[] das) {
             return backward(das);
         } else throw new IllegalStateException();
     }
@@ -57,11 +57,11 @@ public abstract class Layer {
         return 0;
     }
 
-    protected double backward(DoubleArray y) {
+    protected double backward(DoubleBuffer y) {
         return 0;
     }
 
-    protected double backward(DoubleArray[] y) {
+    protected double backward(DoubleBuffer[] y) {
         return 0;
     }
 

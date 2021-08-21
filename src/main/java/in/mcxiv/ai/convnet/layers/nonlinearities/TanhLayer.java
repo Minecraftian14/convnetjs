@@ -31,7 +31,7 @@ public class TanhLayer extends Layer {
     public Vol forward(Vol V, boolean is_training) {
         this.in_act = V;
         var V2 = V.cloneAndZero();
-        var N = V.w.length;
+        var N = V.w.size;
         for(var i=0;i<N;i++) {
             V2.w.set(i, tanh(V.w.get(i)));
         }
@@ -43,7 +43,7 @@ public class TanhLayer extends Layer {
     public void backward() {
         var V = this.in_act; // we need to set dw of this
         var V2 = this.out_act;
-        var N = V.w.length;
+        var N = V.w.size;
         V.dw = zeros(N); // zero out gradient wrt data
         for(var i=0;i<N;i++) {
             var v2wi = V2.w.get(i);
