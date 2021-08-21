@@ -7,6 +7,10 @@ public class DoubleBuffer {
     public int size;
     public int index = 0;
 
+    public DoubleBuffer(DoubleBuffer buffer) {
+        this(buffer.array);
+    }
+
     public DoubleBuffer() {
         this(1);
     }
@@ -16,7 +20,7 @@ public class DoubleBuffer {
         this.size = size;
     }
 
-    public DoubleBuffer(double[] array) {
+    public DoubleBuffer(double...array) {
         this.array = array;
         this.size = array.length;
     }
