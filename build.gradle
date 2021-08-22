@@ -3,6 +3,7 @@ plugins {
     id 'idea'
     id 'maven'
 }
+//jar.enabled = false
 
 group 'in.mcxiv.ai'
 version '0.1'
@@ -49,12 +50,12 @@ task rawLibraryJar(type: Jar, dependsOn: classes) {
     from files(sourceSets.main.output.classesDirs)
     exclude 'in/mcxiv/gen/**'
 
+    baseName = "ConvNetJAVA"
+
     manifest {
         attributes 'Implementation-Title': "ConvNetJS",
                 'Implementation-Version': project.version
     }
-
-    baseName("ConvNetJS")
 
 }
 
@@ -63,19 +64,24 @@ task featuredLibraryJar(type: Jar, dependsOn: classes) {
     from files(sourceSets.main.output.classesDirs)
 
     manifest {
-        attributes 'Implementation-Title': "ConvNetJS",
+        attributes 'Implementation-Title': "ConvNetJS Featured",
                 'Implementation-Version': project.version
     }
 
     archiveClassifier.set("featured")
-    baseName("ConvNetJS")
+    baseName("ConvNetJAVA")
 
+}
+
+configurations.archives.with {
+    artifacts.remove artifacts.find { true }
 }
 
 artifacts {
-    archives rawLibraryJar
-    archives featuredLibraryJar
+    archives rawLibraryJar.archiveFile
+    archives featuredLibraryJar.archiveFile
 }
+
 
 test {
     useJUnitPlatform()
