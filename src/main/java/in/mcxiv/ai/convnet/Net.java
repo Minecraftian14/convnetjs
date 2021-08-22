@@ -25,6 +25,7 @@ public class Net {
     public Net() {
         this(null);
     }
+
     /**
      * Net manages a set of layers
      * For now constraints: Simple linear order of layers, first layer input last layer a cost layer
@@ -82,7 +83,7 @@ public class Net {
                     //@on
                     case "maxout":
                         // create maxout activation, and pass along group size, if provided
-                        var gs = def.notNull("group_size") ? def.getInt("group_size") : 2;
+                        int gs = def.notNull("group_size") ? def.getInt("group_size") : 2;
                         new_defs.add(new VP("type", "maxout", "group_size", gs));
                         break;
                     default:
@@ -109,9 +110,9 @@ public class Net {
         // create the layers
         this.layers = new ArrayList<>();
         for (int i = 0, size = defs.size(); i < size; i++) {
-            var def = defs.get(i);
+            VP def = defs.get(i);
             if (i > 0) {
-                var prev = this.layers.get(i - 1);
+                Layer prev = this.layers.get(i - 1);
                 def.add("in_sx", prev.out_sx);
                 def.add("in_sy", prev.out_sy);
                 def.add("in_depth", prev.out_depth);
@@ -140,15 +141,15 @@ public class Net {
     }
 
     public Vol forward(Vol V) {
-        return forward(V,false);
+        return forward(V, false);
     }
 
     // forward prop the network.
     // The trainer class passes is_training = true, but when this function is
     // called from outside (not from the trainer), it defaults to prediction mode
     public Vol forward(Vol V, boolean is_training) {
-        var act = this.layers.get(0).forward(V, is_training);
-        for(var i=1;i<this.layers.size();i++) {
+        Vol act = this.layers.get(0).forward(V, is_training);
+        for (int i = 1; i < this.layers.size(); i++) {
             act = this.layers.get(i).forward(act, is_training);
         }
         return act;
@@ -156,16 +157,16 @@ public class Net {
 
     public double getCostLoss(Vol V, Object y) {
         this.forward(V, false);
-        var N = this.layers.size();
-        var loss = this.layers.get(N-1).backward(y);
+        int N = this.layers.size();
+        double loss = this.layers.get(N - 1).backward(y);
         return loss;
     }
 
     // backprop: compute gradients wrt all parameters
     public double backward(Object y) {
-        var N = this.layers.size();
-        var loss = this.layers.get(N-1).backward(y); // last layer assumed to be loss layer
-        for(var i=N-2;i>=0;i--) { // first layer assumed input
+        int N = this.layers.size();
+        double loss = this.layers.get(N - 1).backward(y); // last layer assumed to be loss layer
+        for (int i = N - 2; i >= 0; i--) { // first layer assumed input
             this.layers.get(i).backward();
         }
         return loss;
@@ -173,9 +174,9 @@ public class Net {
 
     public ArrayList<VP> getParamsAndGrads() {
         // accumulate parameters and gradients for the entire network
-        var response = new ArrayList<VP>();
-        for(var i=0;i<this.layers.size();i++) {
-            var layer_reponse = this.layers.get(i).getParamsAndGrads();
+        ArrayList<VP> response = new ArrayList<VP>();
+        for (int i = 0; i < this.layers.size(); i++) {
+            ArrayList<VP> layer_reponse = this.layers.get(i).getParamsAndGrads();
             response.addAll(layer_reponse);
         }
         return response;
@@ -184,14 +185,17 @@ public class Net {
     public int getPrediction() {
         // this is a convenience function for returning the argmax
         // prediction, assuming the last layer of the net is a softmax
-        var S = this.layers.get(this.layers.size()-1);
+        Layer S = this.layers.get(this.layers.size() - 1);
         assert S.layer_type.equals("softmax") : "getPrediction function assumes softmax as last layer of the net!";
 
-        var p = S.out_act.w;
-        var maxv = p.get(0);
-        var maxi = 0;
-        for(var i = 1; i<p.size; i++) {
-            if(p.get(i) > maxv) { maxv = p.get(i); maxi = i;}
+        DoubleBuffer p = S.out_act.w;
+        double maxv = p.get(0);
+        int maxi = 0;
+        for (int i = 1; i < p.size; i++) {
+            if (p.get(i) > maxv) {
+                maxv = p.get(i);
+                maxi = i;
+            }
         }
         return maxi; // return index of the class with highest class probability
     }

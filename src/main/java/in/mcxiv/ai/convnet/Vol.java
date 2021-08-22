@@ -30,20 +30,22 @@ public class Vol {
         this.sx = sx;
         this.sy = sy;
         this.depth = depth;
-        var n = sx * sy * depth;
+        int n = sx * sy * depth;
         this.w = zeros(n);
         this.dw = zeros(n);
         if (c == null) {
             // weight normalization is done to equalize the output
             // variance of every neuron, otherwise neurons with a lot
             // of incoming connections have outputs of larger variance
-            var scale = Math.sqrt(1.0 / (sx * sy * depth));
-            for (var i = 0; i < n; i++) {
+            double scale = Math.sqrt(1.0 / (sx * sy * depth));
+            for (int i = 0; i < n; i++) {
                 this.w.set(i, randn(0.0, scale));
             }
-        } else if (c instanceof Double cd)
-            for (var i = 0; i < n; i++)
+        } else if (c instanceof Double) {
+            double cd = (Double) c;
+            for (int i = 0; i < n; i++)
                 this.w.set(i, cd);
+        }
     }
 
     public Vol(int sx, int sy, int depth) {
@@ -63,7 +65,7 @@ public class Vol {
 
         this.w = zeros(this.depth);
         this.dw = zeros(this.depth);
-        for (var i = 0; i < this.depth; i++) {
+        for (int i = 0; i < this.depth; i++) {
             this.w.set(i, sx.get(i));
         }
 
@@ -74,33 +76,33 @@ public class Vol {
     }
 
     public double get(int x, int y, int d) {
-        var ix = calculateIndex(x, y, d);
+        int ix = calculateIndex(x, y, d);
         return this.w.get(ix);
     }
 
     public void set(int x, int y, int d, double v) {
-        var ix = calculateIndex(x, y, d);
+        int ix = calculateIndex(x, y, d);
         this.w.set(ix, v);
     }
 
     public void add(int x, int y, int d, double v) {
-        var ix = calculateIndex(x, y, d);
+        int ix = calculateIndex(x, y, d);
         v += this.w.get(ix);
         this.w.set(ix, v);
     }
 
     public double get_grad(int x, int y, int d) {
-        var ix = calculateIndex(x, y, d);
+        int ix = calculateIndex(x, y, d);
         return this.dw.get(ix);
     }
 
     public void set_grad(int x, int y, int d, double v) {
-        var ix = calculateIndex(x, y, d);
+        int ix = calculateIndex(x, y, d);
         this.dw.set(ix, v);
     }
 
     public void add_grad(int x, int y, int d, double v) {
-        var ix = calculateIndex(x, y, d);
+        int ix = calculateIndex(x, y, d);
         v += this.dw.get(ix);
         this.dw.set(ix, v);
     }
@@ -110,14 +112,14 @@ public class Vol {
     }
 
     public Vol clone() {
-        var V = new Vol(this.sx, this.sy, this.depth, 0.0);
-        var n = this.w.size;
-        for (var i = 0; i < n; i++) V.w.set(i, this.w.get(i));
+        Vol V = new Vol(this.sx, this.sy, this.depth, 0.0);
+        int n = this.w.size;
+        for (int i = 0; i < n; i++) V.w.set(i, this.w.get(i));
         return V;
     }
 
     public void addFrom(Vol V) {
-        for (var k = 0; k < this.w.size; k++) {
+        for (int k = 0; k < this.w.size; k++) {
             double v = this.w.get(k);
             v += V.w.get(k);
             this.w.set(k, v);
@@ -125,7 +127,7 @@ public class Vol {
     }
 
     public void addFromScaled(Vol V, double a) {
-        for (var k = 0; k < this.w.size; k++) {
+        for (int k = 0; k < this.w.size; k++) {
             double v = this.w.get(k);
             v += V.w.get(k) * a;
             this.w.set(k, v);
@@ -133,7 +135,7 @@ public class Vol {
     }
 
     public void setConst(double a) {
-        for (var k = 0; k < this.w.size; k++) {
+        for (int k = 0; k < this.w.size; k++) {
             this.w.set(k, a);
         }
     }

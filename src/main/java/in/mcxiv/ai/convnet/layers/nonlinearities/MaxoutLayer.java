@@ -4,6 +4,7 @@ import in.mcxiv.ai.convnet.DoubleBuffer;
 import in.mcxiv.ai.convnet.Vol;
 import in.mcxiv.ai.convnet.net.Layer;
 import in.mcxiv.ai.convnet.net.VP;
+import in.mcxiv.annotations.LayerConstructor;
 
 import java.util.ArrayList;
 
@@ -11,9 +12,15 @@ import static in.mcxiv.ai.convnet.Util.zeros;
 
 public class MaxoutLayer extends Layer {
 
+    public static final String LAYER_TAG = "maxout";
+
     public DoubleBuffer switches;
     public int group_size;
 
+    @LayerConstructor(
+            tag = LAYER_TAG,
+            required = "int group_size"
+    )
     public MaxoutLayer(VP opt) {
         super(opt);
 
@@ -34,19 +41,19 @@ public class MaxoutLayer extends Layer {
     @Override
     public Vol forward(Vol V, boolean is_training) {
         this.in_act = V;
-        var N = this.out_depth;
-        var V2 = new Vol(this.out_sx, this.out_sy, this.out_depth, 0.0);
+        int N = this.out_depth;
+        Vol V2 = new Vol(this.out_sx, this.out_sy, this.out_depth, 0.0);
 
         // optimization branch. If we're operating on 1D arrays we dont have
         // to worry about keeping track of x,y,d coordinates inside
         // input volumes. In convnets we do :(
         if (this.out_sx == 1 && this.out_sy == 1) {
-            for (var i = 0; i < N; i++) {
-                var ix = i * this.group_size; // base index offset
-                var a = V.w.get(ix);
-                var ai = 0;
-                for (var j = 1; j < this.group_size; j++) {
-                    var a2 = V.w.get(ix + j);
+            for (int i = 0; i < N; i++) {
+                int ix = i * this.group_size; // base index offset
+                double a = V.w.get(ix);
+                int ai = 0;
+                for (int j = 1; j < this.group_size; j++) {
+                    double a2 = V.w.get(ix + j);
                     if (a2 > a) {
                         a = a2;
                         ai = j;
@@ -57,15 +64,15 @@ public class MaxoutLayer extends Layer {
                 ;
             }
         } else {
-            var n = 0; // counter for switches
-            for (var x = 0; x < V.sx; x++) {
-                for (var y = 0; y < V.sy; y++) {
-                    for (var i = 0; i < N; i++) {
-                        var ix = i * this.group_size;
-                        var a = V.get(x, y, ix);
-                        var ai = 0;
-                        for (var j = 1; j < this.group_size; j++) {
-                            var a2 = V.get(x, y, ix + j);
+            int n = 0; // counter for switches
+            for (int x = 0; x < V.sx; x++) {
+                for (int y = 0; y < V.sy; y++) {
+                    for (int i = 0; i < N; i++) {
+                        int ix = i * this.group_size;
+                        double a = V.get(x, y, ix);
+                        int ai = 0;
+                        for (int j = 1; j < this.group_size; j++) {
+                            double a2 = V.get(x, y, ix + j);
                             if (a2 > a) {
                                 a = a2;
                                 ai = j;
@@ -85,24 +92,24 @@ public class MaxoutLayer extends Layer {
 
     @Override
     public void backward() {
-        var V = this.in_act; // we need to set dw of this
-        var V2 = this.out_act;
-        var N = this.out_depth;
+        Vol V = this.in_act; // we need to set dw of this
+        Vol V2 = this.out_act;
+        int N = this.out_depth;
         V.dw = zeros(V.w.size); // zero out gradient wrt data
 
         // pass the gradient through the appropriate switch
         if(this.out_sx == 1 && this.out_sy ==1) {
-            for(var i=0;i<N;i++) {
-                var chain_grad = V2.dw.get(i);
+            for(int i = 0; i<N; i++) {
+                double chain_grad = V2.dw.get(i);
                 V.dw.set((int)this.switches.get(i), chain_grad);
             }
         } else {
             // bleh okay, lets do this the hard way
-            var n=0; // counter for switches
-            for(var x=0;x<V2.sx;x++) {
-                for(var y=0;y<V2.sy;y++) {
-                    for(var i=0;i<N;i++) {
-                        var chain_grad = V2.get_grad(x,y,i);
+            int n=0; // counter for switches
+            for(int x = 0; x<V2.sx; x++) {
+                for(int y = 0; y<V2.sy; y++) {
+                    for(int i = 0; i<N; i++) {
+                        double chain_grad = V2.get_grad(x,y,i);
                         V.set_grad(x,y, (int) this.switches.get(n),chain_grad);
                         n++;
                     }

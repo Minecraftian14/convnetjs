@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+}
+
+group 'in.mcxiv.ai'
+version '0.1'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation project(":annotations")
+
+    // https://mvnrepository.com/artifact/com.google.auto.service/auto-service
+    implementation 'com.google.auto.service:auto-service:1.0'
+    annotationProcessor 'com.google.auto.service:auto-service:1.0'
+
+    // https://mvnrepository.com/artifact/com.squareup/javapoet
+    implementation 'com.squareup:javapoet:1.13.0'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+test {
+    useJUnitPlatform()
+}

@@ -1,5 +1,6 @@
 package in.mcxiv.ai.convnet;
 
+import java.util.ArrayList;
 import java.util.function.Supplier;
 
 import static java.lang.Math.*;
@@ -15,11 +16,11 @@ public class Util {
             return_v = false;
             return v_val;
         }
-        var u = 2 * random() - 1;
-        var v = 2 * random() - 1;
-        var r = u * u + v * v;
+        double u = 2 * random() - 1;
+        double v = 2 * random() - 1;
+        double r = u * u + v * v;
         if (r == 0 || r > 1) return gaussRandom();
-        var c = sqrt(-2 * log(r) / r);
+        double c = sqrt(-2 * log(r) / r);
         v_val = v * c; // cache this
         return_v = true;
         return u * c;
@@ -72,8 +73,22 @@ public class Util {
         return arr.contains(elt);
     }
 
+    public static int[] arrUnique(int[] arr) {
+        ArrayList<Integer> b = new ArrayList<>();
+        for (int i = 0, n = arr.length; i < n; i++) {
+            if (!b.contains(arr[i])) {
+                b.add(arr[i]);
+            }
+        }
+        arr = new int[b.size()];
+        for (int i = 0; i < b.size(); i++) {
+            arr[i]=b.get(i);
+        }
+        return arr;
+    }
+
     public static DoubleBuffer arrUnique(DoubleBuffer arr) {
-        var b = new DoubleBuffer();
+        DoubleBuffer b = new DoubleBuffer();
         for (int i = 0, n = arr.size; i < n; i++) {
             if (!arrContains(b, arr.get(i))) {
                 b.add(arr.get(i));
@@ -86,12 +101,12 @@ public class Util {
     public static MaxMinReport maxmin(DoubleBuffer w) {
         // ... ;s
         if (w.size == 0) return null;
-        var maxv = w.get(0);
-        var minv = w.get(0);
-        var maxi = 0;
-        var mini = 0;
-        var n = w.size;
-        for (var i = 1; i < n; i++) {
+        double maxv = w.get(0);
+        double minv = w.get(0);
+        double maxi = 0;
+        double mini = 0;
+        int n = w.size;
+        for (int i = 1; i < n; i++) {
             if (w.get(i) > maxv) {
                 maxv = w.get(i);
                 maxi = i;
@@ -109,8 +124,8 @@ public class Util {
     }
     public static void printARandomExample(Vol[] xi, int[] yi, Net net) {
         int randomIndex = (int) (xi.length * random());
-        var h = net.forward(xi[randomIndex]);
-        var y = yi[randomIndex];
+        Vol h = net.forward(xi[randomIndex]);
+        int y = yi[randomIndex];
         System.out.println("<<<<<<<<<Predictions >>>>>>>>>");
         System.out.println(h.meta());
         double max = -Double.MAX_VALUE;
@@ -149,8 +164,8 @@ public class Util {
     public static DoubleBuffer randperm(int n) {
         int i = n, j = 0;
         double temp;
-        var array = new DoubleBuffer();
-        for (var q = 0; q < n; q++) array.set(q, q);
+        DoubleBuffer array = new DoubleBuffer();
+        for (int q = 0; q < n; q++) array.set(q, q);
         while (i-- > 0) {
             j = (int) Math.floor(Math.random() * (i + 1));
             array.swap(i, j);
@@ -161,8 +176,8 @@ public class Util {
     // sample from list lst according to probabilities in list probs
     // the two lists are of same size, and probs adds up to 1
     public static double weightedSample(DoubleBuffer lst, DoubleBuffer probs) {
-        var p = randf(0, 1.0);
-        var cumprob = 0.0;
+        double p = randf(0, 1.0);
+        double cumprob = 0.0;
         for (int k = 0, n = lst.size; k < n; k++) {
             cumprob += probs.get(k);
             if (p < cumprob) return lst.get(k);

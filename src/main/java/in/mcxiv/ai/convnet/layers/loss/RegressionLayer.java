@@ -4,12 +4,20 @@ import in.mcxiv.ai.convnet.DoubleBuffer;
 import in.mcxiv.ai.convnet.Vol;
 import in.mcxiv.ai.convnet.net.Layer;
 import in.mcxiv.ai.convnet.net.VP;
+import in.mcxiv.annotations.LayerConstructor;
 
 import java.util.ArrayList;
 
 import static in.mcxiv.ai.convnet.Util.zeros;
 
 public class RegressionLayer extends Layer {
+
+    public static final String LAYER_TAG = "regression";
+
+    @LayerConstructor(
+            tag = LAYER_TAG,
+            required = "int num_neurons"
+    )
     public RegressionLayer(VP opt) {
         super(opt);
         if (opt == null) opt = new VP();
@@ -33,22 +41,24 @@ public class RegressionLayer extends Layer {
     public double backward(Object inp) {
 
         // compute and accumulate gradient wrt weights and bias of this layer
-        var x = this.in_act;
+        Vol x = this.in_act;
         x.dw = zeros(x.w.size); // zero out the gradient of input Vol
-        var loss = 0.0;
+        double loss = 0.0;
 
-        if (inp instanceof Integer y) {
+        if (inp instanceof Integer) {
             // lets hope that only one number is being regressed
-            var dy = x.w.get(0) - y;
+            int y = (Integer) inp;
+            double dy = x.w.get(0) - y;
             x.dw.set(0, dy);
-            loss += 0.5*dy*dy;
-        } else if (inp instanceof DoubleBuffer y) {
-            for(var i=0;i<this.out_depth;i++) {
-                var dy = x.w.get(i) - y.get(i);
+            loss += 0.5 * dy * dy;
+        } else if (inp instanceof DoubleBuffer) {
+            DoubleBuffer y = (DoubleBuffer) inp;
+            for (int i = 0; i < this.out_depth; i++) {
+                double dy = x.w.get(i) - y.get(i);
                 x.dw.set(i, dy);
-                loss += 0.5*dy*dy;
+                loss += 0.5 * dy * dy;
             }
-        } else if (inp instanceof DoubleBuffer[] y) {
+        } else if (inp instanceof DoubleBuffer[]) {
             throw new IllegalStateException();
 //            // assume it is a struct with entries .dim and .val
 //            // and we pass gradient only along dimension dim to be equal to val

@@ -66,17 +66,17 @@ public class Trainer {
 
     public VP train(Vol x, Object y) {
 
-        var start = System.nanoTime();
+        long start = System.nanoTime();
         this.net.forward(x, true); // also set the flag that lets the net know we're just training
-        var end = System.nanoTime();
-        var fwd_time = end - start;
+        long end = System.nanoTime();
+        long fwd_time = end - start;
 
         start = System.nanoTime();
-        var cost_loss = this.net.backward(y);
-        var l2_decay_loss = 0.0;
-        var l1_decay_loss = 0.0;
+        double cost_loss = this.net.backward(y);
+        double l2_decay_loss = 0.0;
+        double l1_decay_loss = 0.0;
         end = System.nanoTime();
-        var bwd_time = end - start;
+        long bwd_time = end - start;
 
         if (this.regression && !(y instanceof DoubleBuffer))
             System.err.println("Warning: a regression net requires an array as training output vector.");
@@ -84,7 +84,7 @@ public class Trainer {
         this.k++;
         if (this.k % this.batch_size == 0) {
 
-            var pglist = this.net.getParamsAndGrads();
+            ArrayList<VP> pglist = this.net.getParamsAndGrads();
 
             boolean isNotVanillaSGD = !this.method.equals("sgd") || this.momentum > 0.0;
             // initialize lists for accumulators. Will only be done once on first iteration
@@ -93,7 +93,7 @@ public class Trainer {
                 // momentum needs gsum
                 // adagrad needs gsum
                 // adam and adadelta needs gsum and xsum
-                for (var i = 0; i < pglist.size(); i++) {
+                for (int i = 0; i < pglist.size(); i++) {
                     DoubleBuffer params = pglist.get(i).getFC("params");
                     this.gsum.add(zeros(params.size));
                     if (this.method.equals("adam") || this.method.equals("adadelta")) {
@@ -105,25 +105,25 @@ public class Trainer {
             }
 
             // perform an update for all sets of weights
-            for (var i = 0; i < pglist.size(); i++) {
-                var pg = pglist.get(i); // param, gradient, other options in future (custom learning rate etc)
+            for (int i = 0; i < pglist.size(); i++) {
+                VP pg = pglist.get(i); // param, gradient, other options in future (custom learning rate etc)
                 DoubleBuffer p = pg.getFC("params");
                 DoubleBuffer g = pg.getFC("grads");
 
                 // learning rate for some parameters.
-                var l2_decay_mul = pg.notNull("l2_decay_mul") ? pg.getD("l2_decay_mul") : 1.0;
-                var l1_decay_mul = pg.notNull("l1_decay_mul") ? pg.getD("l1_decay_mul") : 1.0;
-                var l2_decay = this.l2_decay * l2_decay_mul;
-                var l1_decay = this.l1_decay * l1_decay_mul;
+                double l2_decay_mul = pg.notNull("l2_decay_mul") ? pg.getD("l2_decay_mul") : 1.0;
+                double l1_decay_mul = pg.notNull("l1_decay_mul") ? pg.getD("l1_decay_mul") : 1.0;
+                double l2_decay = this.l2_decay * l2_decay_mul;
+                double l1_decay = this.l1_decay * l1_decay_mul;
 
-                var plen = p.size;
-                for (var j = 0; j < plen; j++) {
+                int plen = p.size;
+                for (int j = 0; j < plen; j++) {
                     l2_decay_loss += l2_decay * p.get(j) * p.get(j) / 2; // accumulate weight decay loss
                     l1_decay_loss += l1_decay * Math.abs(p.get(j));
-                    var l1grad = l1_decay * (p.get(j) > 0 ? 1 : -1);
-                    var l2grad = l2_decay * (p.get(j));
+                    double l1grad = l1_decay * (p.get(j) > 0 ? 1 : -1);
+                    double l2grad = l2_decay * (p.get(j));
 
-                    var gij = (l2grad + l1grad + g.get(j)) / this.batch_size; // raw batch gradient
+                    double gij = (l2grad + l1grad + g.get(j)) / this.batch_size; // raw batch gradient
 
                     DoubleBuffer gsumi = null;
                     DoubleBuffer xsumi = null;
@@ -135,29 +135,29 @@ public class Trainer {
                         // adam update
                         gsumi.set(j, gsumi.get(j) * this.beta1 + (1 - this.beta1) * gij); // update biased first moment estimate
                         xsumi.set(j, xsumi.get(j) * this.beta2 + (1 - this.beta2) * gij * gij); // update biased second moment estimate
-                        var biasCorr1 = gsumi.get(j) * (1 - Math.pow(this.beta1, this.k)); // correct bias first moment estimate
-                        var biasCorr2 = xsumi.get(j) * (1 - Math.pow(this.beta2, this.k)); // correct bias second moment estimate
-                        var dx = -this.learning_rate * biasCorr1 / (Math.sqrt(biasCorr2) + this.eps);
+                        double biasCorr1 = gsumi.get(j) * (1 - Math.pow(this.beta1, this.k)); // correct bias first moment estimate
+                        double biasCorr2 = xsumi.get(j) * (1 - Math.pow(this.beta2, this.k)); // correct bias second moment estimate
+                        double dx = -this.learning_rate * biasCorr1 / (Math.sqrt(biasCorr2) + this.eps);
                         p.addValue(j, dx);
                     } else if (this.method.equals("adagrad")) {
                         // adagrad update
                         gsumi.set(j, gsumi.get(j) + gij * gij);
-                        var dx = -this.learning_rate / Math.sqrt(gsumi.get(j) + this.eps) * gij;
+                        double dx = -this.learning_rate / Math.sqrt(gsumi.get(j) + this.eps) * gij;
                         p.addValue(j, dx);
                     } else if (this.method.equals("windowgrad")) {
                         // this is adagrad but with a moving window weighted average
                         // so the gradient is not accumulated over the entire history of the run.
                         // it's also referred to as Idea #1 in Zeiler paper on Adadelta. Seems reasonable to me!
                         gsumi.set(j, this.ro * gsumi.get(j) + (1 - this.ro) * gij * gij);
-                        var dx = -this.learning_rate / Math.sqrt(gsumi.get(j) + this.eps) * gij; // eps added for better conditioning
+                        double dx = -this.learning_rate / Math.sqrt(gsumi.get(j) + this.eps) * gij; // eps added for better conditioning
                         p.addValue(j, dx);
                     } else if (this.method.equals("adadelta")) {
                         gsumi.set(j, this.ro * gsumi.get(j) + (1 - this.ro) * gij * gij);
-                        var dx = -Math.sqrt((xsumi.get(j) + this.eps) / (gsumi.get(j) + this.eps)) * gij;
+                        double dx = -Math.sqrt((xsumi.get(j) + this.eps) / (gsumi.get(j) + this.eps)) * gij;
                         xsumi.set(j, this.ro * xsumi.get(j) + (1 - this.ro) * dx * dx); // yes, xsum lags behind gsum by 1.
                         p.addValue(j, dx);
                     } else if (this.method.equals("nesterov")) {
-                        var dx = gsumi.get(j);
+                        double dx = gsumi.get(j);
                         gsumi.set(j, gsumi.get(j) * this.momentum + this.learning_rate * gij);
                         dx = this.momentum * dx - (1.0 + this.momentum) * gsumi.get(j);
                         p.addValue(j, dx);
@@ -165,7 +165,7 @@ public class Trainer {
                         // assume SGD
                         if (this.momentum > 0.0) {
                             // momentum update
-                            var dx = this.momentum * gsumi.get(j) - this.learning_rate * gij; // step
+                            double dx = this.momentum * gsumi.get(j) - this.learning_rate * gij; // step
                             gsumi.set(j, dx); // back this up for next iteration of momentum
                             p.addValue(j, dx);// apply corrected gradient
                         } else {

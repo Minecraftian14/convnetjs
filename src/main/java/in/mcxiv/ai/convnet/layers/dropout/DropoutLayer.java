@@ -4,6 +4,7 @@ import in.mcxiv.ai.convnet.DoubleBuffer;
 import in.mcxiv.ai.convnet.Vol;
 import in.mcxiv.ai.convnet.net.Layer;
 import in.mcxiv.ai.convnet.net.VP;
+import in.mcxiv.annotations.LayerConstructor;
 
 import java.util.ArrayList;
 
@@ -11,9 +12,15 @@ import static in.mcxiv.ai.convnet.Util.zeros;
 
 public class DropoutLayer extends Layer {
 
+    public static final String LAYER_TAG = "dropout";
+
     public DoubleBuffer dropped;
     public double drop_prob;
 
+    @LayerConstructor(
+            tag = LAYER_TAG,
+            optional = "double drop_prob 0.5"
+    )
     public DropoutLayer(VP opt) {
         super(opt);
         if (opt == null) opt = new VP();
@@ -30,11 +37,11 @@ public class DropoutLayer extends Layer {
     @Override
     public Vol forward(Vol V, boolean is_training) {
         this.in_act = V;
-        var V2 = V.clone();
-        var N = V.w.size;
+        Vol V2 = V.clone();
+        int N = V.w.size;
         if (is_training) {
             // do dropout
-            for (var i = 0; i < N; i++) {
+            for (int i = 0; i < N; i++) {
                 if (Math.random() < this.drop_prob) {
                     V2.w.set(i, 0);
                     this.dropped.set(i, true);
@@ -45,7 +52,7 @@ public class DropoutLayer extends Layer {
             }
         } else {
             // scale the activations during prediction
-            for (var i = 0; i < N; i++) {
+            for (int i = 0; i < N; i++) {
                 V2.w.set(i, V2.w.get(i) * this.drop_prob);
             }
         }
@@ -55,11 +62,11 @@ public class DropoutLayer extends Layer {
 
     @Override
     public void backward() {
-        var V = this.in_act; // we need to set dw of this
-        var chain_grad = this.out_act;
-        var N = V.w.size;
+        Vol V = this.in_act; // we need to set dw of this
+        Vol chain_grad = this.out_act;
+        int N = V.w.size;
         V.dw = zeros(N); // zero out gradient wrt data
-        for(var i=0;i<N;i++) {
+        for(int i = 0; i<N; i++) {
             if(this.dropped.get(i)==0) {
                 V.dw.set(i, chain_grad.dw.get(i)); // copy over the gradient
             }

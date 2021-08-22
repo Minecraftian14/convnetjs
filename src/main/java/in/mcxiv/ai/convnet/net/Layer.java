@@ -42,13 +42,16 @@ public abstract class Layer {
     }
 
     public double backward(Object y) {
-        if (y instanceof Integer i) {
-            return backward((int)i);
-        } else if (y instanceof DoubleBuffer da) {
+        if (y instanceof Integer) {
+            Integer i = (Integer) y;
+            return backward((int) i);
+        } else if (y instanceof DoubleBuffer) {
+            DoubleBuffer da = (DoubleBuffer) y;
             if (da.size == 1)
                 return backward((int) da.get(0)); // TODO: will round off be better?
             return backward(da);
-        } else if (y instanceof DoubleBuffer[] das) {
+        } else if (y instanceof DoubleBuffer[]) {
+            DoubleBuffer[] das = (DoubleBuffer[]) y;
             return backward(das);
         } else throw new IllegalStateException();
     }
@@ -66,22 +69,7 @@ public abstract class Layer {
     }
 
     public ArrayList<VP> getParamsAndGrads() {
-        ArrayList<VP> response = new ArrayList<>();
-        for (var i = 0; i < this.out_depth; i++) {
-            response.add(new VP(
-                    "params", this.filters.get(i).w,
-                    "grads", this.filters.get(i).dw,
-                    "l2_decay_mul", this.l2_decay_mul,
-                    "l1_decay_mul", this.l1_decay_mul)
-            );
-        }
-        response.add(new VP(
-                "params", this.biases.w,
-                "grads", this.biases.dw,
-                "l1_decay_mul", 0.0,
-                "l2_decay_mul", 0.0
-        ));
-        return response;
+        return new ArrayList<>();
     }
 
 }

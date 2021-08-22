@@ -1,10 +1,13 @@
 package in.mcxiv.ai.convnet;
 
+import org.junit.jupiter.api.Disabled;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.function.Supplier;
 
+@Disabled
 public class ImageDisplayUtility {
 
     static int size = 150;

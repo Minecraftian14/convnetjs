@@ -9,8 +9,8 @@ public class VolUtil {
     // or (W, H, 1) if gray scale
     public static Vol img_to_vol(BufferedImage img, boolean convert_grayscale) {
 
-        var W = img.getWidth();
-        var H = img.getHeight();
+        int W = img.getWidth();
+        int H = img.getHeight();
         int model = (convert_grayscale ? 1 : 4);
 
         DoubleBuffer data = new DoubleBuffer();

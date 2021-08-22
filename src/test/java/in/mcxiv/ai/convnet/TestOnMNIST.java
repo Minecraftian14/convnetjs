@@ -2,9 +2,10 @@ package in.mcxiv.ai.convnet;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
-import in.mcxiv.ai.convnet.net.VP;
+import in.mcxiv.ai.convnet.net.VPL;
 import in.mcxiv.ai.convnet.trainers.Trainer;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.awt.image.BufferedImage;
@@ -13,10 +14,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+@Disabled
 public class TestOnMNIST {
 
     public static final int trainingSamples = 10000;
@@ -58,7 +58,7 @@ public class TestOnMNIST {
         public static void main(String[] args) {
             new TestOnMNIST().datasetInitialization();
 
-            var layer_defs = new VP.VPL();
+            VPL layer_defs = new VPL();
             layer_defs.push("type", "input", "out_sx", 28, "out_sy", 28, "out_depth", 1);
             layer_defs.push("type", "fc", "num_neurons", 50, "activation", "tanh");
             layer_defs.push("type", "fc", "num_neurons", 50, "activation", "tanh");
@@ -70,7 +70,7 @@ public class TestOnMNIST {
             Net net = new Net();
             net.makeLayers(layer_defs);
 
-            var trainer = new Trainer(net, "learning_rate", 1, "method", "adadelta", "batch_size", 50, "l2_decay", 0.001, "l1_decay", 0.001);
+            Trainer trainer = new Trainer(net, "learning_rate", 1, "method", "adadelta", "batch_size", 50, "l2_decay", 0.001, "l1_decay", 0.001);
 
             Supplier<BufferedImage> getOriginal = () -> {
                 int idx = (int) (xi.length * Math.random());
@@ -80,8 +80,8 @@ public class TestOnMNIST {
             Runnable runnable = ImageDisplayUtility.display("Test Autoencoder", getOriginal, 0, 0);
 
             while (true) {
-                for (var i = 0; i < xi.length; i++) {
-                    var x = xi[i];
+                for (int i = 0; i < xi.length; i++) {
+                    Vol x = xi[i];
 //                    System.out.println("trainer.train(x, x.w).get(\"loss\") = " + trainer.train(x, x.w).get("loss"));
                     trainer.train(x, x.w);
                 }
@@ -93,7 +93,7 @@ public class TestOnMNIST {
     @Test
     void classifyTest() {
 
-        var layer_defs = new VP.VPL();
+        VPL layer_defs = new VPL();
         layer_defs.push("type", "input", "out_sx", 28, "out_sy", 28, "out_depth", 1);
         layer_defs.push("type", "conv", "sx", 5, "filters", 8, "stride", 1, "pad", 2, "activation", "relu");
         layer_defs.push("type", "pool", "sx", 2, "stride", 2);
@@ -103,14 +103,14 @@ public class TestOnMNIST {
         Net net = new Net();
         net.makeLayers(layer_defs);
 
-        var trainer = new Trainer(net, "method", "adadelta", "batch_size", 20, "l2_decay", 0.001);
+        Trainer trainer = new Trainer(net, "method", "adadelta", "batch_size", 20, "l2_decay", 0.001);
 
         Util.printARandomExample(xi, yi, net);
 
         for (int i = 0; i < 10000; i++) {
             int tidx = i % trainingSamples;
-            var x = xi[tidx];
-            var y = yi[tidx];
+            Vol x = xi[tidx];
+            int y = yi[tidx];
             trainer.train(x, y);
         }
 

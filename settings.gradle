@@ -1,2 +1,3 @@
 rootProject.name = 'convnetjs'
-
+include 'processor'
+include 'annotations'

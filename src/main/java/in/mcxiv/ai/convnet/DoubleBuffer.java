@@ -62,5 +62,11 @@ public class DoubleBuffer {
     public void addValue(int index, double value) {
         array[index] += value;
     }
+
+    public DoubleBuffer slice(int index, int length) {
+        double[] newArray = new double[length];
+        System.arraycopy(array, index, newArray, 0, length);
+        return new DoubleBuffer(newArray);
+    }
 }
 

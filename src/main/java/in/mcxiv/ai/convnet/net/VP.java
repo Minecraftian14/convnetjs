@@ -81,37 +81,38 @@ public class VP {
 
     public String getSt(String key) {
         Object obj = get(key);
-        if(obj instanceof String s) return s;
+        if (obj instanceof String) return (String) obj;
         throw throwUp();
     }
+
+    public int getInt(String key, int def) {
+        if (notNull(key)) return getInt(key);
+        return def;
+    }
+
     public int getInt(String key) {
         Object obj = get(key);
-        if(obj instanceof Double d) return d.intValue();
-        if(obj instanceof Integer i) return i;
-        if(obj instanceof String s) return (int) Double.parseDouble(s);
+        if (obj instanceof Double) return ((Double) obj).intValue();
+        if (obj instanceof Integer) return ((Integer) obj);
+        if (obj instanceof String) return (int) Double.parseDouble(((String) obj));
         throw throwUp();
+    }
+
+    public double getD(String key, double def) {
+        if (notNull(key)) return getD(key);
+        return def;
     }
 
     public double getD(String key) {
         Object obj = get(key);
-        if(obj instanceof Double d) return d.intValue();
-        if(obj instanceof Integer i) return i;
-        if(obj instanceof String s) return Double.parseDouble(s);
+        if (obj instanceof Double) return ((Double) obj).intValue();
+        if (obj instanceof Integer) return ((Integer) obj);
+        if (obj instanceof String) return Double.parseDouble(((String) obj));
         throw throwUp();
     }
 
     private UnsupportedOperationException throwUp() {
         return new UnsupportedOperationException();
-    }
-
-    public static class VPL extends ArrayList<VP> {
-        public boolean add(Object...args) {
-            return super.add(new VP(args));
-        }
-        public boolean push(Object...args) {
-            return add(args);
-        }
-
     }
 
 }

@@ -3,6 +3,7 @@ package in.mcxiv.ai.convnet.layers.loss;
 import in.mcxiv.ai.convnet.Vol;
 import in.mcxiv.ai.convnet.net.Layer;
 import in.mcxiv.ai.convnet.net.VP;
+import in.mcxiv.annotations.LayerConstructor;
 
 import java.util.ArrayList;
 
@@ -10,6 +11,12 @@ import static in.mcxiv.ai.convnet.Util.zeros;
 
 public class SVMLayer extends Layer {
 
+    public static final String LAYER_TAG = "svm";
+
+    @LayerConstructor(
+            tag = LAYER_TAG,
+            required = "int num_classes"
+    )
     public SVMLayer(VP opt) {
         super(opt);
         if (opt == null) opt = new VP();
@@ -32,20 +39,20 @@ public class SVMLayer extends Layer {
     @Override
     protected double backward(int y) {
         // compute and accumulate gradient wrt weights and bias of this layer
-        var x = this.in_act;
+        Vol x = this.in_act;
         x.dw = zeros(x.w.size); // zero out the gradient of input Vol
 
         // we're using structured loss here, which means that the score
         // of the ground truth should be higher than the score of any other
         // class, by a margin
-        var yscore = x.w.get(y); // score of ground truth
-        var margin = 1.0;
-        var loss = 0.0;
-        for (var i = 0; i < this.out_depth; i++) {
+        double yscore = x.w.get(y); // score of ground truth
+        double margin = 1.0;
+        double loss = 0.0;
+        for (int i = 0; i < this.out_depth; i++) {
             if (y == i) {
                 continue;
             }
-            var ydiff = -yscore + x.w.get(i) + margin;
+            double ydiff = -yscore + x.w.get(i) + margin;
             if (ydiff > 0) {
                 // violating dimension, apply loss
                 x.dw.set(i, 1);

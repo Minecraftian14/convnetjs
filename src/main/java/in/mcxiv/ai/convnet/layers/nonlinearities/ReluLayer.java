@@ -1,8 +1,10 @@
 package in.mcxiv.ai.convnet.layers.nonlinearities;
 
+import in.mcxiv.ai.convnet.DoubleBuffer;
 import in.mcxiv.ai.convnet.Vol;
 import in.mcxiv.ai.convnet.net.Layer;
 import in.mcxiv.ai.convnet.net.VP;
+import in.mcxiv.annotations.LayerConstructor;
 
 import java.util.ArrayList;
 
@@ -10,6 +12,11 @@ import static in.mcxiv.ai.convnet.Util.zeros;
 
 public class ReluLayer extends Layer {
 
+    public static final String LAYER_TAG = "relu";
+
+    @LayerConstructor(
+            tag = LAYER_TAG
+    )
     public ReluLayer(VP opt) {
         super(opt);
         if (opt == null) opt = new VP();
@@ -24,10 +31,10 @@ public class ReluLayer extends Layer {
     @Override
     public Vol forward(Vol V, boolean is_training) {
         this.in_act = V;
-        var V2 = V.clone();
-        var N = V.w.size;
-        var V2w = V2.w;
-        for (var i = 0; i < N; i++) {
+        Vol V2 = V.clone();
+        int N = V.w.size;
+        DoubleBuffer V2w = V2.w;
+        for (int i = 0; i < N; i++) {
             if (V2w.get(i) < 0) V2w.set(i, 0); // threshold at 0
         }
         this.out_act = V2;
@@ -36,11 +43,11 @@ public class ReluLayer extends Layer {
 
     @Override
     public void backward() {
-        var V = this.in_act; // we need to set dw of this
-        var V2 = this.out_act;
-        var N = V.w.size;
+        Vol V = this.in_act; // we need to set dw of this
+        Vol V2 = this.out_act;
+        int N = V.w.size;
         V.dw = zeros(N); // zero out gradient wrt data
-        for(var i=0;i<N;i++) {
+        for(int i = 0; i<N; i++) {
             if(V2.w.get(i) <= 0) V.dw.set(i,0); // threshold
             else V.dw.set(i, V2.dw.get(i));
         }

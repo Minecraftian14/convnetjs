@@ -1,15 +1,22 @@
 package in.mcxiv.ai.convnet.layers.dotproducts;
 
 import in.mcxiv.ai.convnet.Vol;
-import in.mcxiv.ai.convnet.net.Layer;
 import in.mcxiv.ai.convnet.net.VP;
+import in.mcxiv.annotations.LayerConstructor;
 
 import java.util.ArrayList;
 
 import static in.mcxiv.ai.convnet.Util.zeros;
 
-public class ConvLayer extends Layer {
+public class ConvLayer extends DotProductLayer {
 
+    public static final String LAYER_TAG = "conv";
+
+    @LayerConstructor(
+            tag = LAYER_TAG,
+            required = "int filters, int sx",
+            optional = "int sy sx(), int stride 1, int pad 0, double l1_decay_mul 0.0, double l2_decay_mul 1.0, double bias_pref 0.0"
+    )
     public ConvLayer(VP opt) {
         super(opt);
         if (opt == null) opt = new VP();
@@ -37,7 +44,7 @@ public class ConvLayer extends Layer {
         this.layer_type = "conv";
 
         // initializations
-        var bias = opt.notNull("bias_pref") ? opt.getD("bias_pref") : 0.0;
+        double bias = opt.notNull("bias_pref") ? opt.getD("bias_pref") : 0.0;
         this.filters = new ArrayList<>();
         for (int i = 0; i < this.out_depth; i++) {
             filters.add(new Vol(this.sx, this.sy, this.in_depth));
@@ -50,28 +57,28 @@ public class ConvLayer extends Layer {
         // optimized code by @mdda that achieves 2x speedup over previous version
 
         this.in_act = V;
-        var A = new Vol(this.out_sx, this.out_sy, this.out_depth, 0.0);
+        Vol A = new Vol(this.out_sx, this.out_sy, this.out_depth, 0.0);
 
-        var V_sx = V.sx;
-        var V_sy = V.sy;
-        var xy_stride = this.stride;
+        int V_sx = V.sx;
+        int V_sy = V.sy;
+        int xy_stride = this.stride;
 
-        for (var d = 0; d < this.out_depth; d++) {
-            var f = this.filters.get(d);
-            var x = -this.pad;
-            var y = -this.pad;
-            for (var ay = 0; ay < this.out_sy; y += xy_stride, ay++) {  // xy_stride
+        for (int d = 0; d < this.out_depth; d++) {
+            Vol f = this.filters.get(d);
+            int x = -this.pad;
+            int y = -this.pad;
+            for (int ay = 0; ay < this.out_sy; y += xy_stride, ay++) {  // xy_stride
                 x = -this.pad;
-                for (var ax = 0; ax < this.out_sx; x += xy_stride, ax++) {  // xy_stride
+                for (int ax = 0; ax < this.out_sx; x += xy_stride, ax++) {  // xy_stride
 
                     // convolve centered at this particular location
-                    var a = 0.0;
-                    for (var fy = 0; fy < f.sy; fy++) {
-                        var oy = y + fy; // coordinates in the original input array coordinates
-                        for (var fx = 0; fx < f.sx; fx++) {
-                            var ox = x + fx;
+                    double a = 0.0;
+                    for (int fy = 0; fy < f.sy; fy++) {
+                        int oy = y + fy; // coordinates in the original input array coordinates
+                        for (int fx = 0; fx < f.sx; fx++) {
+                            int ox = x + fx;
                             if (oy >= 0 && oy < V_sy && ox >= 0 && ox < V_sx) {
-                                for (var fd = 0; fd < f.depth; fd++) {
+                                for (int fd = 0; fd < f.depth; fd++) {
                                     // avoid function call overhead (x2) for efficiency, compromise modularity :(
                                     a += f.w.get(((f.sx * fy) + fx) * f.depth + fd) * V.w.get(((V_sx * oy) + ox) * V.depth + fd);
                                 }
@@ -89,32 +96,32 @@ public class ConvLayer extends Layer {
 
     public void backward() {
 
-        var V = this.in_act;
+        Vol V = this.in_act;
         V.dw = zeros(V.w.size); // zero out gradient wrt bottom data, we're about to fill it
 
-        var V_sx = V.sx;
-        var V_sy = V.sy;
-        var xy_stride = this.stride;
+        int V_sx = V.sx;
+        int V_sy = V.sy;
+        int xy_stride = this.stride;
 
-        for (var d = 0; d < this.out_depth; d++) {
-            var f = this.filters.get(d);
-            var x = -this.pad;
-            var y = -this.pad;
-            for (var ay = 0; ay < this.out_sy; y += xy_stride, ay++) {  // xy_stride
+        for (int d = 0; d < this.out_depth; d++) {
+            Vol f = this.filters.get(d);
+            int x = -this.pad;
+            int y = -this.pad;
+            for (int ay = 0; ay < this.out_sy; y += xy_stride, ay++) {  // xy_stride
                 x = -this.pad;
-                for (var ax = 0; ax < this.out_sx; x += xy_stride, ax++) {  // xy_stride
+                for (int ax = 0; ax < this.out_sx; x += xy_stride, ax++) {  // xy_stride
 
                     // convolve centered at this particular location
-                    var chain_grad = this.out_act.get_grad(ax, ay, d); // gradient from above, from chain rule
-                    for (var fy = 0; fy < f.sy; fy++) {
-                        var oy = y + fy; // coordinates in the original input array coordinates
-                        for (var fx = 0; fx < f.sx; fx++) {
-                            var ox = x + fx;
+                    double chain_grad = this.out_act.get_grad(ax, ay, d); // gradient from above, from chain rule
+                    for (int fy = 0; fy < f.sy; fy++) {
+                        int oy = y + fy; // coordinates in the original input array coordinates
+                        for (int fx = 0; fx < f.sx; fx++) {
+                            int ox = x + fx;
                             if (oy >= 0 && oy < V_sy && ox >= 0 && ox < V_sx) {
-                                for (var fd = 0; fd < f.depth; fd++) {
+                                for (int fd = 0; fd < f.depth; fd++) {
                                     // avoid function call overhead (x2) for efficiency, compromise modularity :(
-                                    var ix1 = ((V_sx * oy) + ox) * V.depth + fd;
-                                    var ix2 = ((f.sx * fy) + fx) * f.depth + fd;
+                                    int ix1 = ((V_sx * oy) + ox) * V.depth + fd;
+                                    int ix2 = ((f.sx * fy) + fx) * f.depth + fd;
                                     f.dw.addValue(ix2, V.w.get(ix1) * chain_grad);
                                     V.dw.addValue(ix1, f.w.get(ix2) * chain_grad);
                                 }

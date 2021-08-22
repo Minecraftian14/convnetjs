@@ -2,6 +2,7 @@ package in.mcxiv.ai.convnet;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import org.junit.jupiter.api.Disabled;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+@Disabled
 public enum Dataset {
     IRIS("Iris.csv");
 
@@ -53,7 +55,7 @@ public enum Dataset {
             reader.close();
             csvReader.close();
 
-            xi = xList.toArray(Vol[]::new);
+            xi = xList.toArray(new Vol[0]);
             yi = new int[yList.size()];
             for (int i = 0, s = yList.size(); i < s; i++) yi[i] = yList.get(i);
 

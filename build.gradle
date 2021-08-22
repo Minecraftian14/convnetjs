@@ -1,9 +1,31 @@
 plugins {
-    id 'java'
+    id 'java-library'
+    id 'idea'
 }
 
 group 'in.mcxiv.ai'
 version '0.1'
+
+sourceSets {
+    gen {
+        java {
+            srcDir 'build/generated/sources/annotationProcessor/java/main'
+            compileClasspath += sourceSets.main.output
+            runtimeClasspath += sourceSets.main.output
+        }
+    }
+//    test {
+//        java {
+//            compileClasspath += sourceSets.gen.output
+//            runtimeClasspath += sourceSets.gen.output
+//        }
+//    }
+    main {
+        java {
+            exclude 'in/mcxiv/gen/**'
+        }
+    }
+}
 
 repositories {
     mavenCentral()
@@ -14,12 +36,51 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
+//sourceSets.test.java.srcDirs += ['build/generated/sources/annotationProcessor/java/main']
+
 dependencies {
 
+    implementation project(":annotations")
+    annotationProcessor project(":processor")
+
+//    testImplementation sourceSets.gen.allJava.files.collect { it.isDirectory() ? it : zipTree(it) }
     testImplementation group: 'com.opencsv', name: 'opencsv', version: '5.5.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 
+}
+
+task rawLibraryJar(type: Jar, dependsOn: classes) {
+
+    from files(sourceSets.main.output.classesDirs)
+    exclude 'in/mcxiv/gen/**'
+
+    manifest {
+        attributes 'Implementation-Title': "ConvNetJS",
+                'Implementation-Version': project.version
+    }
+
+    baseName("ConvNetJS")
+
+}
+
+task featuredLibraryJar(type: Jar, dependsOn: classes) {
+
+    from files(sourceSets.main.output.classesDirs)
+
+    manifest {
+        attributes 'Implementation-Title': "ConvNetJS",
+                'Implementation-Version': project.version
+    }
+
+    archiveClassifier.set("featured")
+    baseName("ConvNetJS")
+
+}
+
+artifacts {
+    archives rawLibraryJar
+    archives featuredLibraryJar
 }
 
 test {
