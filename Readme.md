@@ -101,15 +101,46 @@ and here is a small **Convolutional Neural Network** if you wish to predict on i
 ```
 
 ## ~~Getting Started~~
-Hey! Dont use this project! Nor is it maintained, nor anyone can help.
+Hey! Dont use this project consider using ConvnetJS instead! Neither is it maintained, nor anyone can help.
 A [Getting Started](http://cs.stanford.edu/people/karpathy/convnetjs/started.html) tutorial is available on main page.
 
 The full [Documentation](http://cs.stanford.edu/people/karpathy/convnetjs/docs.html) can also be found there.
 
-See the **releases** page for this project to get the minified, compiled library, and a direct link to is also available below for convenience (but please host your own copy)
 
-- [convnet.js](http://cs.stanford.edu/people/karpathy/convnetjs/build/convnet.js)
-- [convnet-min.js](http://cs.stanford.edu/people/karpathy/convnetjs/build/convnet-min.js)
+Must have:
+```groovy
+allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+```
+
+To get the library only:
+```groovy
+testImplementation 'com.github.Minecraftian14:convnetjs:0.1.0'
+
+```
+To get the library and a few utilities:
+
+```groovy
+testImplementation 'com.github.Minecraftian14:convnetjs:0.1.0:featured'
+
+```
+These utilities contains a few extra classes to make things slightly easier to use.
+For instance, the same example from above can be written as:
+```js
+LayerVPL layer_defs = new LayerVPL();
+layer_defs.input(2);
+layer_defs.fc(20).activation("relu");
+layer_defs.softmax(10);
+
+Net net = new Net();
+net.makeLayers(layer_defs);
+
+Trainer trainer = new Trainer(net, new TrainerVP().method("sgd").learning_rate(0.01).l2_decay(0.001));
+```
 
 ## License
 MIT
