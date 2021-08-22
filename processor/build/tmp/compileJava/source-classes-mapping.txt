@@ -1,2 +1,12 @@
+in/mcxiv/proc/JPoetUtilities.java
+ in.mcxiv.proc.JPoetUtilities
+ in.mcxiv.proc.JPoetUtilities$FieldConsumer
+ in.mcxiv.proc.JPoetUtilities$IndexedFieldConsumer
 in/mcxiv/proc/VPProcessor.java
  in.mcxiv.proc.VPProcessor
+in/mcxiv/proc/VPUtilities.java
+ in.mcxiv.proc.VPUtilities
+in/mcxiv/proc/BasicUtilities.java
+ in.mcxiv.proc.BasicUtilities
+in/mcxiv/proc/ProcessorUtilities.java
+ in.mcxiv.proc.ProcessorUtilities

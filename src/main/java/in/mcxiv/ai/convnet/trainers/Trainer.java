@@ -4,6 +4,7 @@ import in.mcxiv.ai.convnet.DoubleBuffer;
 import in.mcxiv.ai.convnet.Net;
 import in.mcxiv.ai.convnet.Vol;
 import in.mcxiv.ai.convnet.net.VP;
+import in.mcxiv.annotations.VPConstructor;
 
 import java.util.ArrayList;
 
@@ -35,6 +36,20 @@ public class Trainer {
         this(net, new VP(options));
     }
 
+    @VPConstructor(
+            tag = "trainer",
+            optional = "" +
+                    "double learning_rate 0.01, " +
+                    "double l1_decay      0.0,  " +
+                    "double l2_decay      0.0,  " +
+                    "int    batch_size    1,    " +
+                    "String method        'sgd'," +
+                    "double momentum      0.9,  " +
+                    "double ro            0.95, " +
+                    "double eps           1e-8, " +
+                    "double beta1         0.9,  " +
+                    "double beta2         0.999 "
+    )
     public Trainer(Net net, VP options) {
         if (options == null) options = new VP();
 

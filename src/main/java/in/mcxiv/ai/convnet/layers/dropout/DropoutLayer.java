@@ -4,7 +4,7 @@ import in.mcxiv.ai.convnet.DoubleBuffer;
 import in.mcxiv.ai.convnet.Vol;
 import in.mcxiv.ai.convnet.net.Layer;
 import in.mcxiv.ai.convnet.net.VP;
-import in.mcxiv.annotations.LayerConstructor;
+import in.mcxiv.annotations.VPConstructor;
 
 import java.util.ArrayList;
 
@@ -17,7 +17,7 @@ public class DropoutLayer extends Layer {
     public DoubleBuffer dropped;
     public double drop_prob;
 
-    @LayerConstructor(
+    @VPConstructor(
             tag = LAYER_TAG,
             optional = "double drop_prob 0.5"
     )

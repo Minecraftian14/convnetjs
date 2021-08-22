@@ -2,9 +2,8 @@ package in.mcxiv.ai.convnet.layers.dotproducts;
 
 import in.mcxiv.ai.convnet.DoubleBuffer;
 import in.mcxiv.ai.convnet.Vol;
-import in.mcxiv.ai.convnet.net.Layer;
 import in.mcxiv.ai.convnet.net.VP;
-import in.mcxiv.annotations.LayerConstructor;
+import in.mcxiv.annotations.VPConstructor;
 
 import java.util.ArrayList;
 
@@ -14,7 +13,7 @@ public class FullyConnLayer extends DotProductLayer {
 
     public static final String LAYER_TAG = "fc";
 
-    @LayerConstructor(
+    @VPConstructor(
             tag = LAYER_TAG,
             required = "int num_neurons",
             optional = "double l1_decay_mul 0.0, double l2_decay_mul 1.0, double bias_pref 0.0"

@@ -23,6 +23,11 @@ class TooBasicOfATest_TheFromReadme {
         // declare the linear classifier on top of the previous hidden layer
         layer_defs.softmax(10);
 
+        Net net = new Net();
+        net.makeLayers(layer_defs);
+
+        Trainer trainer = new Trainer(net, new TrainerVP().method("sgd").learning_rate(0.01).l2_decay(0.001));
+
     }
 
     @Test

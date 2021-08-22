@@ -79,6 +79,11 @@ public class VP {
                 values[i] = value.toString();
     }
 
+    public String getSt(String key, String def) {
+        if (notNull(key)) return getSt(key);
+        return def;
+    }
+
     public String getSt(String key) {
         Object obj = get(key);
         if (obj instanceof String) return (String) obj;

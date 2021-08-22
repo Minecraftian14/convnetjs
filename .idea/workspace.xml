@@ -74,7 +74,7 @@
     <property name="android.sdk.path" value="$USER_HOME$/AppData/Local/Android/Sdk" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit5" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5" value="" />
-    <property name="last.edited.regexp" value="Sd  ample Textlayer" />
+    <property name="last.edited.regexp" value="Sd  ampl  e Textlayer" />
     <property name="last_directory_selection" value="$PROJECT_DIR$/src/main/java/in/mcxiv/ai/convnet/net" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/src/test/resources" />
     <property name="project.structure.last.edited" value="Project" />
@@ -90,7 +90,11 @@
       <recent name="" />
     </key>
     <key name="MoveMembersDialog.RECENTS_KEY">
-      <recent name="in.mcxiv.ai.convnet.Util" />
+      <recent name="in.mcxiv.proc.ProcessorUtilities" />
+      <recent name="in.mcxiv.proc.JPoetUtilities" />
+      <recent name="in.mcxiv.proc.BasicUtilities" />
+      <recent name="in.mcxiv.proc.VPUtilities" />
+      <recent name="in.mcxiv.proc.UTIL" />
     </key>
     <key name="MoveInnerDialog.RECENTS_KEY">
       <recent name="in.mcxiv.ai.convnet.net" />
@@ -110,9 +114,10 @@
       <command value="gradle build --Xlint:unchecked" />
       <command value="gradle build" />
       <command value="gradle clean build" />
+      <command value="gradle clean build --full-stacktrace" />
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.convnetjs [featuredLibraryJar]">
+  <component name="RunManager" selected="JUnit.TooBasicOfATest_TheFromReadme.Generated_VP_Test">
     <configuration name="convnetjs [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -216,11 +221,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.TooBasicOfATest_TheFromReadme.Generated_VP_Test" />
+        <item itemvalue="Gradle.convnetjs [clean build]" />
         <item itemvalue="Gradle.convnetjs [featuredLibraryJar]" />
         <item itemvalue="Gradle.convnetjs [rawLibraryJar]" />
-        <item itemvalue="Gradle.convnetjs [clean build]" />
         <item itemvalue="Gradle.convnetjs [build]" />
-        <item itemvalue="JUnit.TooBasicOfATest_TheFromReadme.Generated_VP_Test" />
       </list>
     </recent_temporary>
   </component>
@@ -247,6 +252,11 @@
           <url>file://$PROJECT_DIR$/src/test/java/in/mcxiv/ai/convnet/TooBasicOfATest_TheFromReadme.java</url>
           <line>149</line>
           <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/processor/src/main/java/in/mcxiv/proc/VPProcessor.java</url>
+          <line>56</line>
+          <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

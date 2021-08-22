@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.CONSTRUCTOR)
-public @interface LayerConstructor {
+public @interface VPConstructor {
     String tag();
 
     String required() default "";

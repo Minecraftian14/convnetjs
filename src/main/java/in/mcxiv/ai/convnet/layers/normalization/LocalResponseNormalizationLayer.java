@@ -3,7 +3,7 @@ package in.mcxiv.ai.convnet.layers.normalization;
 import in.mcxiv.ai.convnet.Vol;
 import in.mcxiv.ai.convnet.net.Layer;
 import in.mcxiv.ai.convnet.net.VP;
-import in.mcxiv.annotations.LayerConstructor;
+import in.mcxiv.annotations.VPConstructor;
 
 import java.util.ArrayList;
 
@@ -19,7 +19,7 @@ public class LocalResponseNormalizationLayer extends Layer {
     public double beta;
     private Vol S_cache_;
 
-    @LayerConstructor(
+    @VPConstructor(
             tag = LAYER_TAG,
             required = "int k, int n, double alpha, double beta"
     )

@@ -2,7 +2,7 @@ package in.mcxiv.ai.convnet.layers.dotproducts;
 
 import in.mcxiv.ai.convnet.Vol;
 import in.mcxiv.ai.convnet.net.VP;
-import in.mcxiv.annotations.LayerConstructor;
+import in.mcxiv.annotations.VPConstructor;
 
 import java.util.ArrayList;
 
@@ -12,7 +12,7 @@ public class ConvLayer extends DotProductLayer {
 
     public static final String LAYER_TAG = "conv";
 
-    @LayerConstructor(
+    @VPConstructor(
             tag = LAYER_TAG,
             required = "int filters, int sx",
             optional = "int sy sx(), int stride 1, int pad 0, double l1_decay_mul 0.0, double l2_decay_mul 1.0, double bias_pref 0.0"

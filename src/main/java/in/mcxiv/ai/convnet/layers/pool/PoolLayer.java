@@ -4,7 +4,7 @@ import in.mcxiv.ai.convnet.DoubleBuffer;
 import in.mcxiv.ai.convnet.Vol;
 import in.mcxiv.ai.convnet.net.Layer;
 import in.mcxiv.ai.convnet.net.VP;
-import in.mcxiv.annotations.LayerConstructor;
+import in.mcxiv.annotations.VPConstructor;
 
 import java.util.ArrayList;
 
@@ -17,7 +17,7 @@ public class PoolLayer extends Layer {
     private final DoubleBuffer switchx;
     private final DoubleBuffer switchy;
 
-    @LayerConstructor(
+    @VPConstructor(
             tag = LAYER_TAG,
             required = "int sx",
             optional = "int sy sx(), int stride 2, int pad 0"

@@ -3,7 +3,7 @@ package in.mcxiv.ai.convnet.layers.nonlinearities;
 import in.mcxiv.ai.convnet.Vol;
 import in.mcxiv.ai.convnet.net.Layer;
 import in.mcxiv.ai.convnet.net.VP;
-import in.mcxiv.annotations.LayerConstructor;
+import in.mcxiv.annotations.VPConstructor;
 
 import java.util.ArrayList;
 
@@ -18,7 +18,7 @@ public class TanhLayer extends Layer {
         return (y - 1) / (y + 1);
     }
 
-    @LayerConstructor(
+    @VPConstructor(
             tag = LAYER_TAG
     )
     public TanhLayer(VP opt) {
